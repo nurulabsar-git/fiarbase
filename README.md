@@ -2,9 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Learn codding with Rifat
 
-In the project directory, you can run:
+https://www.facebook.com/Learn Codding With Rifat
 
 ### `yarn start`
 
