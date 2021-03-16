@@ -15,11 +15,10 @@ function App() {
     photo: ''
   })
   
-  const googleProvider = new firebase.auth.GoogleAuthProvider();
-  const facebookProvider = new firebase.auth.FacebookAuthProvider();
+  const provider = new firebase.auth.GoogleAuthProvider();
   const handleSingIn = () =>{
       // console.log("object");
-      firebase.auth().signInWithPopup(googleProvider)
+      firebase.auth().signInWithPopup(provider)
       .then(result => {
         const {displayName, photoURL, email} = result.user;
         const singInUser = {
@@ -38,36 +37,6 @@ function App() {
       })
   }
 
-
-
-const handleFbSignIn = () => {
-  firebase.auth().signInWithPopup(facebookProvider)
-  .then((result) => {
-    
-    var credential = result.credential;
-
-    
-    var user = result.user;
-
-  
-    var accessToken = credential.accessToken;
-
-    console.log('fb user after sign in ', user);
-
-    
-  })
-  .catch((error) => {
-    
-    var errorCode = error.code;
-    var errorMessage = error.message;
-   
-    var email = error.email;
-    
-    var credential = error.credential;
-  });
-}
-
-
   const handleSingOut = () => {
     // console.log('sign out');
     firebase.auth().signOut()
@@ -85,7 +54,7 @@ const handleFbSignIn = () => {
     setUser(signOutUser);
     })
     .catch(error => {
-     
+
     })
   }
 
@@ -118,72 +87,51 @@ const handleFbSignIn = () => {
         // console.log(user.email, user.password)
         if(newUser && user.email && user.password){
           firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
-          .then((result) => {
-          const newUserInfo = {...user};
-          newUserInfo.error = '';
-          newUserInfo.success = true;
-          setUser(newUserInfo);
-            // console.log(result)
-            updateUserName(user.name);
-          
-          })
-        .catch((error) => {
-          //handle error
-          const newUserInfo = {... user};
-          newUserInfo.error = error.message;
-          newUserInfo.success = false;
-          setUser(newUserInfo);
-          
-          
-          
-        });
+  .then((result) => {
+  const newUserInfo = {...user};
+  newUserInfo.error = '';
+  newUserInfo.success = true;
+  setUser(newUserInfo);
+    // console.log(result)
+  
+  })
+  .catch((error) => {
+    //handle error
+    const newUserInfo = {... user};
+    newUserInfo.error = error.message;
+    newUserInfo.success = false;
+    setUser(newUserInfo);
+    
+    
+  });
     
   }
-        if(!newUser && user.email && user.password) {
-        firebase.auth().signInWithEmailAndPassword(user.email, user.password)
-        .then((result) => {
-          const newUserInfo = {...user};
-        newUserInfo.error = '';
-        newUserInfo.success = true;
-        setUser(newUserInfo);
-        console.log('sign in user info', result.user);
-        })
-        .catch((error) => {
-          const newUserInfo = {... user};
-          newUserInfo.error = error.message;
-          newUserInfo.success = false;
-          setUser(newUserInfo);
-          
-        });
-      }
+if(!newUser && user.email && user.password){
+  firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+  .then((result) => {
+    const newUserInfo = {...user};
+  newUserInfo.error = '';
+  newUserInfo.success = true;
+  setUser(newUserInfo);
+  })
+  .catch((error) => {
+    const newUserInfo = {... user};
+    newUserInfo.error = error.message;
+    newUserInfo.success = false;
+    setUser(newUserInfo);
+    
+  });
+}
 
 
    hello.preventDefault();
-  }
-
-  const updateUserName = name =>{
-
-   const user = firebase.auth().currentUser;
-
-    user.updateProfile({
-      displayName: name
-    }).then( function () {
-      console.log('user info updated successfully');
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
-
   }
   return (
     <div className="App">
       { user.isSingIn?<button onClick={handleSingOut}>Sign out</button> : 
       <button onClick={handleSingIn}>Sign in</button>
         
-      } <br/>
-
-      <button onClick={handleFbSignIn}>Sign in using facebook</button>
-
+      }
       {
         user.isSingIn && <div>
           <p>Welcome, {user.name}</p>
@@ -194,19 +142,23 @@ const handleFbSignIn = () => {
     <h1>Our Own Authentication</h1>
     <input onChange={() => setNewUser(!newUser)} type="checkbox" name="newUser" id=""/>
     <label htmlFor="newUser">New User Sign up</label>
+    {/* <p>Name: {user.name}</p>
+    <p>Email: {user.email}</p>
+    <p>password: {user.password}</p> */}
+    
     <form onSubmit={handleSubmit}>
     {newUser && <input  onBlur={handleBlur} name= "name" type="text" placeholder="your name"/>
    } <br/>
     <input onBlur={handleBlur} type="text" name="email" placeholder="Your email address" required/> <br/>
     <input onBlur={handleBlur} type="password" name="password" placeholder="your password" required/> <br/>
-    <input type="submit" value={newUser ? 'Sign up' : 'Sign in'}/>
+    <input type="submit" value="submit"/>
     </form>
 
      <p style={{color: 'red'}}>{user.error}</p>
    {/* <p style={{color: 'green'}}>{user.success}</p> */}
 
     {
-      user.success && <p style={{color: 'green'}}>User {newUser ? 'created' : 'Logged in'} successfully</p>
+      user.success && <p style={{color: 'green'}}>User {newUser? 'created' : 'Logged in'} successfully</p>
     }
     </div>
   );
